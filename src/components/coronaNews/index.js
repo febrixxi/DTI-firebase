@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import app from '../../services/firebase';
 import 'firebase/database';
+import Pagination from './pagination';
 
 const CoronaNews = () => {
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPerPage, setShowPerPage] = useState(4);
+  const [pagination, setPagination] = useState({
+    start: 0,
+    end: showPerPage,
+  });
+
+  const onPaginationChange = (start, end) => {
+    setPagination({ start: start, end: end });
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -22,9 +32,14 @@ const CoronaNews = () => {
     <div className="container">
       <h2>data corona</h2>
       {isLoading ? <p>loading</p> : <p>data</p>}
-      {news.map((info, num) => (
+      <Pagination
+        showPerPage={showPerPage}
+        onPaginationChange={onPaginationChange}
+        total={news.length}
+      />
+      {news.slice(pagination.start, pagination.end).map((info, num) => (
         <div
-          className="card card-groups col col-4"
+          className="card card-groups col col-3"
           key={num}
           style={{ display: 'inline-flex' }}
         >
@@ -36,7 +51,7 @@ const CoronaNews = () => {
               <p style={{ textTransform: 'capitalize' }}>{infoNested.title}</p>
               <a
                 href={infoNested.url}
-                className="btn btn-primary"
+                className="btn btn-info"
                 style={{ float: 'right' }}
               >
                 Read Here
